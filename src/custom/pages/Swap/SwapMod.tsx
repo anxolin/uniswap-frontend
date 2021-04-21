@@ -52,6 +52,7 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 import { isTradeBetter } from 'utils/trades'
 import FeeInformationTooltip from 'components/swap/FeeInformationTooltip'
 import { SwapProps } from '.'
+import useIsWrapping from 'hooks/useIsWrapping'
 
 export default function Swap({
   history,
@@ -132,6 +133,8 @@ export default function Swap({
     // should override and get wrapCallback?
     isNativeInSwap
   )
+
+  const isWrapPending = useIsWrapping()
 
   const showWrap: boolean = !isNativeInSwap && wrapType !== WrapType.NOT_APPLICABLE
   const { address: recipientAddress } = useENSAddress(recipient)
@@ -492,9 +495,17 @@ export default function Swap({
                 Connect Wallet
               </ButtonLight>
             ) : showWrap ? (
-              <ButtonPrimary buttonSize={ButtonSize.BIG} disabled={Boolean(wrapInputError)} onClick={onWrap}>
-                {wrapInputError ??
-                  (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
+              <ButtonPrimary
+                buttonSize={ButtonSize.BIG}
+                disabled={isWrapPending || Boolean(wrapInputError)}
+                onClick={onWrap}
+              >
+                {isWrapPending ? (
+                  <Loader />
+                ) : (
+                  wrapInputError ??
+                  (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)
+                )}
               </ButtonPrimary>
             ) : !swapInputError && isNativeIn ? (
               <SwitchToWethBtn wrappedToken={wrappedToken} />

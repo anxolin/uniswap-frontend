@@ -9,7 +9,7 @@ import { useCurrencyBalances } from 'state/wallet/hooks'
 import { SHORT_PRECISION } from 'constants/index'
 import { colors } from 'theme'
 import Loader from 'components/Loader'
-import { useIsTransactionPending } from 'state/transactions/hooks'
+import useIsWrapping from 'hooks/useIsWrapping'
 
 const COLOUR_SHEET = colors(false)
 
@@ -107,9 +107,8 @@ export interface Props {
 export default function EthWethWrap({ account, native, wrapped, wrapCallback }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const [pendingHash, setPendingHash] = useState<string | undefined>()
 
-  const isWrapPending = useIsTransactionPending(pendingHash)
+  const isWrapPending = useIsWrapping()
   const [nativeBalance, wrappedBalance] = useCurrencyBalances(account, [native, wrapped])
 
   const wrappedSymbol = wrapped.symbol || 'wrapped native token'
@@ -126,8 +125,7 @@ export default function EthWethWrap({ account, native, wrapped, wrapCallback }: 
     setLoading(true)
 
     try {
-      const txResponse = await wrapCallback()
-      setPendingHash(txResponse.hash)
+      await wrapCallback()
     } catch (error) {
       console.error(error)
 
