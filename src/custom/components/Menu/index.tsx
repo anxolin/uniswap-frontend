@@ -166,10 +166,8 @@ export function Menu() {
         <Policy to="/terms-and-conditions" onClick={close} onKeyDown={close}>
           Terms and conditions
         </Policy>
-        {/* 
         <Policy to="/privacy-policy">Privacy policy</Policy>
-        <Policy to="/cookie-policy">Cookie policy</Policy> 
-        */}
+        <Policy to="/cookie-policy">Cookie policy</Policy>
       </MenuFlyout>
     </StyledMenu>
   )
