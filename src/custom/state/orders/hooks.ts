@@ -21,8 +21,8 @@ import {
   setIsOrderUnfillable,
   SetIsOrderUnfillableParams,
 } from './actions'
-import { OrderObject, OrdersState, PartialOrdersMap, V2OrderObject } from './reducer'
-import { isTruthy } from 'utils/misc'
+import { OrderObject, OrdersState, OrderTypeKeys, PartialOrdersMap, V2OrderObject } from './reducer'
+import { isTruthy, mapEnumKeysToArray } from 'utils/misc'
 import { OrderID } from 'utils/operator'
 import { ContractDeploymentBlocks } from './consts'
 import { deserializeToken, serializeToken } from '@src/state/user/hooks'
@@ -75,17 +75,14 @@ type SetIsOrderUnfillable = (params: SetIsOrderUnfillableParams) => void
 
 type GetOrderByIdCallback = (id: OrderID) => SerializedOrder | undefined
 
-type OrderTypeKeys = 'pending' | 'expired' | 'fulfilled' | 'cancelled'
-function _concatOrdersState(state: OrdersState[ChainId], keys: OrderTypeKeys[]) {
+function _concatOrdersState(state: OrdersState[ChainId]) {
+  const keys = mapEnumKeysToArray<OrderTypeKeys>(OrderTypeKeys)
   if (!state) return []
 
-  const firstState = state[keys[0]] || {}
-  const restKeys = keys.slice(1)
-
-  return restKeys.reduce((acc, nextKey) => {
+  return keys.reduce((acc, nextKey) => {
     const nextState = Object.values(state[nextKey] || {})
     return acc.concat(nextState)
-  }, Object.values(firstState))
+  }, [] as (OrderObject | undefined)[])
 }
 
 function _isV3Order(orderObject: any): orderObject is OrderObject {
@@ -158,9 +155,7 @@ export const useOrders = ({ chainId }: GetOrdersParams): Order[] => {
   return useMemo(() => {
     if (!state) return []
 
-    const allOrders = _concatOrdersState(state, ['pending', 'expired', 'fulfilled', 'cancelled'])
-      .map(_deserializeOrder)
-      .filter(isTruthy)
+    const allOrders = _concatOrdersState(state).map(_deserializeOrder).filter(isTruthy)
 
     return allOrders
   }, [state])

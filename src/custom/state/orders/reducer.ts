@@ -36,12 +36,19 @@ export interface OrderObject {
 type OrdersMap = Record<OrderID, OrderObject>
 export type PartialOrdersMap = Partial<OrdersMap>
 
+export enum OrderTypeKeys {
+  PENDING = 'pending',
+  FULFILLED = 'fulfilled',
+  CANCELLED = 'cancelled',
+  EXPIRED = 'expired',
+}
+
+export type OrdersType = {
+  [orderType in OrderTypeKeys]: PartialOrdersMap
+}
+
 export type OrdersState = {
-  readonly [chainId in ChainId]?: {
-    pending: PartialOrdersMap
-    fulfilled: PartialOrdersMap
-    expired: PartialOrdersMap
-    cancelled: PartialOrdersMap
+  readonly [chainId in ChainId]?: OrdersType & {
     lastCheckedBlock: number
   }
 }
