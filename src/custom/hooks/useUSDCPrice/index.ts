@@ -89,7 +89,7 @@ export default function useUSDCPrice(currency?: Currency) {
 }
 
 interface GetPriceQuoteParams {
-  currencyAmount?: CurrencyAmount<Currency>
+  currencyAmount: CurrencyAmount<Currency> | undefined
   error: Error | null
   price: Price<Token, Currency> | null
 }
@@ -111,7 +111,7 @@ function useGetPriceQuote({ price, error, currencyAmount }: GetPriceQuoteParams)
  * Returns the price in USDC of the input currency from price APIs
  * @param currencyAmount currency to compute the USDC price of
  */
-export function useUSDCValue(currencyAmount?: CurrencyAmount<Currency>) {
+export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined) {
   const usdcPrice = useUSDCPrice(currencyAmount?.currency)
 
   return useGetPriceQuote({ ...usdcPrice, currencyAmount })
@@ -183,13 +183,13 @@ export function useCoingeckoUsdPrice(currency?: Currency, amount?: string) {
   return { price, error }
 }
 
-export function useCoingeckoUsdValue(currencyAmount: CurrencyAmount<Currency> | undefined) {
+export function useCoingeckoUsdValue(currencyAmount?: CurrencyAmount<Currency>) {
   const coingeckoUsdPrice = useCoingeckoUsdPrice(currencyAmount?.currency, currencyAmount?.toExact())
 
   return useGetPriceQuote({ ...coingeckoUsdPrice, currencyAmount })
 }
 
-export function useHigherUSDValue(currencyAmount: CurrencyAmount<Currency> | undefined) {
+export function useHigherUSDValue(currencyAmount?: CurrencyAmount<Currency>) {
   const usdcValue = useUSDCValue(currencyAmount)
   const coingeckoUsdPrice = useCoingeckoUsdValue(currencyAmount)
 

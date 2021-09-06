@@ -230,8 +230,8 @@ export default function Swap({
 
   // const fiatValueInput = useUSDCValue(parsedAmounts[Field.INPUT])
   // const fiatValueOutput = useUSDCValue(parsedAmounts[Field.OUTPUT])
-  const fiatValueInput = useHigherUSDValue(parsedAmounts[Field.INPUT])
-  const fiatValueOutput = useHigherUSDValue(parsedAmounts[Field.OUTPUT])
+  const fiatValueInput = useHigherUSDValue(parsedAmounts[Field.INPUT]) // mod
+  const fiatValueOutput = useHigherUSDValue(parsedAmounts[Field.OUTPUT]) // mod
   const priceImpact = computeFiatValuePriceImpact(fiatValueInput, fiatValueOutput)
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
@@ -657,9 +657,7 @@ export default function Swap({
                     // gap: 8 // mod
                   }}
                 >
-                  {trade && (
-                    <Price trade={trade} theme={theme} showInverted={showInverted} setShowInverted={setShowInverted} />
-                  )}
+                  <Price trade={trade} theme={theme} showInverted={showInverted} setShowInverted={setShowInverted} />
 
                   {!isExpertMode && !allowedSlippage.equalTo(INITIAL_ALLOWED_SLIPPAGE_PERCENT) && (
                     // <RowBetween height={24} align="center">
@@ -672,7 +670,7 @@ export default function Swap({
                     // </RowBetween>
                     <RowSlippage allowedSlippage={allowedSlippage} fontSize={12} fontWeight={400} rowHeight={24} />
                   )}
-                  {(isFeeGreater || trade) && fee && <TradeBasicDetails trade={trade} fee={fee} />}
+                  <TradeBasicDetails trade={trade} fee={fee} isFeeGreater={isFeeGreater} />
                 </AutoColumn>
                 {/* ETH exactIn && wrapCallback returned us cb */}
                 {isNativeIn && onWrap && (

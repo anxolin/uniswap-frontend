@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import styled, { DefaultTheme } from 'styled-components'
 import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core'
@@ -21,9 +21,9 @@ import {
   ButtonLight as ButtonLightMod,
 } from 'components/Button'
 import EthWethWrap, { Props as EthWethWrapProps } from 'components/swap/EthWethWrap'
-import { useReplaceSwapState, useSwapState } from 'state/swap/hooks'
+import { tryParseAmount, useReplaceSwapState, useSwapState } from 'state/swap/hooks'
 import { ArrowWrapperLoader, ArrowWrapperLoaderProps, Wrapper as ArrowWrapper } from 'components/ArrowWrapperLoader'
-import { INITIAL_ALLOWED_SLIPPAGE_PERCENT, LONG_LOAD_THRESHOLD } from 'constants/index'
+import { FIAT_PRECISION, INITIAL_ALLOWED_SLIPPAGE_PERCENT, LONG_LOAD_THRESHOLD } from 'constants/index'
 import { Repeat } from 'react-feather'
 import { Trans } from '@lingui/macro'
 import TradePrice from 'components/swap/TradePrice'
@@ -33,10 +33,12 @@ import { RowReceivedAfterSlippage } from 'components/swap/TradeSummary/RowReceiv
 import { RowFee } from 'components/swap/TradeSummary/RowFee'
 import { useExpertModeManager, useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 import { useHigherUSDValue } from 'hooks/useUSDCPrice'
+import { formatSmart } from 'utils/format'
 
 interface TradeBasicDetailsProp extends BoxProps {
   trade?: TradeGp
-  fee: CurrencyAmount<Currency>
+  fee: CurrencyAmount<Currency> | null
+  isFeeGreater: boolean
 }
 
 const BottomGrouping = styled(BottomGroupingUni)`
@@ -178,7 +180,7 @@ const PriceSwitcher = styled(AutoRow)`
 `
 
 interface PriceProps extends BoxProps {
-  trade: TradeGp
+  trade: TradeGp | undefined | null
   theme: DefaultTheme
   showInverted: boolean
   setShowInverted: React.Dispatch<React.SetStateAction<boolean>>
@@ -191,6 +193,21 @@ export const Price: React.FC<PriceProps> = ({
   setShowInverted,
   ...boxProps
 }: PriceProps) => {
+  const priceSide = useMemo(() => {
+    if (!trade) return undefined
+
+    const { executionPrice: price } = trade
+
+    return !showInverted
+      ? tryParseAmount(price.invert().toFixed(price.baseCurrency.decimals), price.baseCurrency)
+      : tryParseAmount(price.toFixed(price.quoteCurrency.decimals), price.quoteCurrency)
+  }, [showInverted, trade])
+  const amount = useHigherUSDValue(priceSide)
+  const fiatValueFormatted = formatSmart(amount, FIAT_PRECISION)
+
+  // no trade ? return null
+  if (!trade) return null
+
   return (
     <LowerSectionWrapper {...boxProps}>
       <Text fontWeight={500} fontSize={14} color={theme.text2}>
@@ -200,7 +217,12 @@ export const Price: React.FC<PriceProps> = ({
         </PriceSwitcher>
       </Text>
       <div className="price-container">
-        <TradePrice price={trade.executionPrice} showInverted={showInverted} setShowInverted={setShowInverted} />
+        <TradePrice
+          price={trade.executionPrice}
+          showInverted={showInverted}
+          setShowInverted={setShowInverted}
+          fiatValue={fiatValueFormatted}
+        />
       </div>
     </LowerSectionWrapper>
   )
@@ -211,19 +233,17 @@ export const LightGreyText = styled.span`
   color: ${({ theme }) => theme.text4};
 `
 
-function TradeBasicDetails({ trade, fee, ...boxProps }: TradeBasicDetailsProp) {
+function TradeBasicDetails({ trade, fee, isFeeGreater, ...boxProps }: TradeBasicDetailsProp) {
   const allowedSlippage = useUserSlippageToleranceWithDefault(INITIAL_ALLOWED_SLIPPAGE_PERCENT)
   const [isExpertMode] = useExpertModeManager()
   const allowsOffchainSigning = true // TODO: Deal with this in next PR
 
-  // trades are null when there is a fee quote error e.g
-  // so we can take both
-  const feeFiatValue = useHigherUSDValue(trade?.fee.feeAsCurrency || fee)
+  const feeFiatValue = useHigherUSDValue((trade?.fee.feeAsCurrency || fee) ?? undefined)
 
   return (
     <LowerSectionWrapper {...boxProps}>
       {/* Fees */}
-      {(trade || fee) && (
+      {(isFeeGreater || trade) && fee && (
         <RowFee
           trade={trade}
           showHelpers={true}
