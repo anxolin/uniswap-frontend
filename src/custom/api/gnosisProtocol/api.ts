@@ -18,11 +18,7 @@ import QuoteError, {
 import { toErc20Address } from 'utils/tokens'
 import { FeeInformation, FeeQuoteParams, PriceInformation, PriceQuoteParams } from 'utils/price'
 import { AppDataDoc } from 'utils/metadata'
-import MetadataError, {
-  MetadataApiErrorCodeDetails,
-  MetadataApiErrorCodes,
-  MetadataApiErrorObject,
-} from './errors/MetadataError'
+import MetadataError from './errors/MetadataError'
 
 import { DEFAULT_NETWORK_FOR_LISTS } from 'constants/lists'
 import { GAS_FEE_ENDPOINTS } from 'constants/index'
@@ -79,6 +75,19 @@ export interface OrderMetaData {
   kind: OrderKind
   partiallyFillable: false
   signature: string
+}
+
+export interface TradeMetaData {
+  blockNumber: number
+  logIndex: number
+  orderUid: OrderID
+  owner: string
+  sellToken: string
+  buyToken: string
+  sellAmount: string
+  buyAmount: string
+  sellAmountBeforeFees: string
+  txHash: string
 }
 
 export interface UnsupportedToken {
@@ -188,11 +197,6 @@ const UNHANDLED_ORDER_ERROR: ApiErrorObject = {
   description: ApiErrorCodeDetails.UNHANDLED_CREATE_ERROR,
 }
 
-const UNHANDLED_METADATA_ERROR: MetadataApiErrorObject = {
-  errorType: MetadataApiErrorCodes.UNHANDLED_GET_ERROR,
-  description: MetadataApiErrorCodeDetails.UNHANDLED_GET_ERROR,
-}
-
 async function _handleQuoteResponse(response: Response) {
   if (!response.ok) {
     const errorObj: ApiErrorObject = await response.json()
@@ -255,48 +259,36 @@ export async function getOrder(chainId: ChainId, orderId: string): Promise<Order
   }
 }
 
-export async function getAppDataDoc(chainId: ChainId, address: string): Promise<AppMetadata | null> {
-  console.log(`[api:${API_NAME}] Get AppData doc for`, chainId, address)
+export async function getTrades(chainId: ChainId, owner: string): Promise<TradeMetaData[]> {
+  console.log('[util:operator] Get trades for', chainId, owner)
   try {
-    const response = await _get(chainId, `/appData/${address}`)
+    const response = await _get(chainId, `/trades?owner=${owner}`)
 
     if (!response.ok) {
-      const errorResponse: MetadataApiErrorObject = await response.json()
-
-      if (errorResponse.errorType === MetadataApiErrorCodes.AddressNotFound) {
-        return null
-      }
-
-      throw new MetadataError(errorResponse)
+      const errorResponse = await response.json()
+      throw new Error(errorResponse)
     } else {
       return response.json()
     }
   } catch (error) {
-    console.error('Error getting AppData doc information:', error)
-    throw new MetadataError(UNHANDLED_METADATA_ERROR)
+    console.error('Error getting trades:', error)
+    throw new Error('Error getting trades: ' + error)
   }
 }
 
-export type AppMetadata = {
-  user: string
+export type UploadMetadataParams = {
   metadata: AppDataDoc
-  hash: string
+  chainId: ChainId
 }
 
-export type UploadMetadataParams = {
-  chainId: ChainId
-} & AppMetadata
-
-export async function uploadAppDataDoc(params: UploadMetadataParams): Promise<void> {
-  const { chainId, user, metadata, hash } = params
-  console.log(`[api:${API_NAME}] Post AppData doc`, params)
+export async function uploadAppDataDoc(params: UploadMetadataParams): Promise<string> {
+  const { chainId, metadata } = params
+  console.log('[utils:operator] Post AppData doc', params)
 
   // Call API
   // TODO: the final endpoint IS TBD
-  const response = await _post(chainId, `/metadata`, {
-    user,
-    metadata,
-    hash,
+  const response = await _post(chainId, `/appData`, {
+    ...metadata,
   })
 
   // Handle response
@@ -306,7 +298,7 @@ export async function uploadAppDataDoc(params: UploadMetadataParams): Promise<vo
     throw new Error(errorMessage)
   }
 
-  await response.json()
+  return await response.json()
 }
 
 export interface GasFeeEndpointResponse {
@@ -325,5 +317,5 @@ export async function getGasPrices(chainId: ChainId = DEFAULT_NETWORK_FOR_LISTS)
 
 // Register some globals for convenience
 registerOnWindow({
-  operator: { getFeeQuote, getAppDataDoc, getOrder, sendSignedOrder, uploadAppDataDoc, apiGet: _get, apiPost: _post },
+  operator: { getFeeQuote, getTrades, getOrder, sendSignedOrder, uploadAppDataDoc, apiGet: _get, apiPost: _post },
 })

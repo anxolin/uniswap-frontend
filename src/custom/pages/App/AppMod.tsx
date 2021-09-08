@@ -13,6 +13,7 @@ import ErrorBoundary from 'components/ErrorBoundary'
 // import { useModalOpen, useToggleModal } from '../state/application/hooks'
 import DarkModeQueryParamReader from 'theme'
 import ReferralLinkUpdater from 'state/affiliate/updater'
+import AffiliateStatusCheck from 'components/AffiliateStatusCheck'
 // import {
 //   RedirectDuplicateTokenIds,
 // } from './AddLiquidity/redirects'
@@ -90,6 +91,7 @@ export default function App(props?: { children?: ReactNode }) {
         <Route component={ApeModeQueryParamReader} />
         <AppWrapper>
           <Popups />
+          <AffiliateStatusCheck />
           <URLWarning />
           <HeaderWrapper>
             <Header />

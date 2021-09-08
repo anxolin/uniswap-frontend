@@ -7,14 +7,10 @@ export interface MetadataApiErrorObject {
 
 // TODO: Validate/Update error code when the API is updated
 export enum MetadataApiErrorCodes {
-  AddressNotFound = 'AddressNotFound',
-  UNHANDLED_GET_ERROR = 'UNHANDLED_GET_ERROR',
   UNHANDLED_UPLOAD_ERROR = 'UNHANDLED_UPLOAD_ERROR',
 }
 
 export enum MetadataApiErrorCodeDetails {
-  AddressNotFound = "The referral address doesn't exist",
-  UNHANDLED_GET_ERROR = 'Metadata AppDoc fetch failed. This may be due to a server or network connectivity issue. Please try again later.',
   UNHANDLED_UPLOAD_ERROR = 'The metadata object could not be saved',
 }
 
