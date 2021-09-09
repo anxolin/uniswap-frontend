@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import styled from 'styled-components'
+import { useMemo } from 'react'
+import styled from 'styled-components/macro'
 import WalletModal from 'components/WalletModal'
 import { Web3StatusInner, Web3StatusConnected } from './Web3StatusMod'
 import { AbstractConnector } from '@web3-react/abstract-connector'

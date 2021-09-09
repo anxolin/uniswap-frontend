@@ -5,8 +5,13 @@ import { Colors } from 'theme/styled'
 import { colors as colorsUniswap } from '@src/theme'
 import { ButtonSize } from 'theme'
 
-import { DefaultTheme, ThemeProvider as StyledComponentsThemeProvider, createGlobalStyle, css } from 'styled-components'
-import React, { useMemo } from 'react'
+import {
+  DefaultTheme,
+  ThemeProvider as StyledComponentsThemeProvider,
+  createGlobalStyle,
+  css,
+} from 'styled-components/macro'
+import { useMemo } from 'react'
 
 import { theme as themeUniswap } from '@src/theme'
 import { useIsDarkMode } from 'state/user/hooks'

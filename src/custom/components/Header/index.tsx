@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { SupportedChainId as ChainId } from 'constants/chains'
 import Web3Status from 'components/Web3Status'
 import { ExternalLink } from 'theme'
 
 import HeaderMod, {
-  NetworkCard as NetworkCardUni,
   Title,
   HeaderLinks,
   HeaderRow,
@@ -19,7 +18,7 @@ import HeaderMod, {
 } from './HeaderMod'
 import Menu from '../Menu'
 import { Moon, Sun } from 'react-feather'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { useActiveWeb3React } from 'hooks/web3'
 import { useETHBalances } from 'state/wallet/hooks'
 import { AMOUNT_PRECISION } from 'constants/index'
@@ -30,6 +29,7 @@ import OrdersPanel from 'components/OrdersPanel'
 
 import { supportedChainId } from 'utils/supportedChainId'
 import { formatSmart } from 'utils/format'
+import NetworkCard from 'components/Header/NetworkCard'
 
 export const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.RINKEBY]: 'Rinkeby',
@@ -81,19 +81,6 @@ export const HeaderModWrapper = styled(HeaderMod)`
   ${HeaderLinks} {
     margin: 5px 0 0 0;
   }
-`
-
-const NetworkCard = styled(NetworkCardUni)`
-  background-color: ${({ theme }) => theme.networkCard.background};
-  color: ${({ theme }) => theme.networkCard.text};
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin: 0 0 0 8px;
-  `};
-
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;
-  `};
 `
 
 const TwitterLink = styled(StyledMenuButton)`
@@ -176,11 +163,7 @@ export default function Header() {
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
-          <HideSmall>
-            {chainId && NETWORK_LABELS[chainId] && (
-              <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
-            )}
-          </HideSmall>
+          <HideSmall>{chainId && NETWORK_LABELS[chainId] && <NetworkCard />}</HideSmall>
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userEthBalance ? (
               <BalanceText style={{ flexShrink: 0 }} pl="0.75rem" pr="0.5rem" fontWeight={500}>

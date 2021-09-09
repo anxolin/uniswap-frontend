@@ -1,5 +1,4 @@
-import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { ButtonProps } from 'rebass/styled-components'
 import { ChevronDown } from 'react-feather'
 
@@ -20,6 +19,8 @@ import {
   // We don't import the "composite" buttons, they are just redefined (c&p actually)
 } from './ButtonMod'
 import { ButtonSize } from 'theme'
+
+export * from './ButtonMod'
 
 export const ButtonPrimary = styled(ButtonPrimaryMod)`
   // CSS overrides

@@ -1,3 +1,5 @@
+export * from '@src/constants/chains'
+
 export enum SupportedChainId {
   MAINNET = 1,
   ROPSTEN = 3,
@@ -19,3 +21,11 @@ export const NETWORK_LABELS: { [chainId in SupportedChainId | number]: string } 
   //   [SupportedChainId.ARBITRUM_KOVAN]: 'kArbitrum',
   //   [SupportedChainId.ARBITRUM_ONE]: 'Arbitrum One',
 }
+
+export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
+  SupportedChainId.MAINNET,
+  SupportedChainId.ROPSTEN,
+  SupportedChainId.RINKEBY,
+  SupportedChainId.GOERLI,
+  SupportedChainId.KOVAN,
+]

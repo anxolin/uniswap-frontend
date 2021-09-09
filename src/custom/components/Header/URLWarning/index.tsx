@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { PRODUCTION_URL } from 'constants/index'
 import { AlertTriangle } from 'react-feather'
 import URLWarningUni, { StyledClose } from './URLWarningMod'

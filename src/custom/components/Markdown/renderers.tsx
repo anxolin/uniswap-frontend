@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import visit from 'unist-util-visit'
 import { Node as MarkdownNode } from 'unist'
 
@@ -11,7 +11,7 @@ const getTextFromMarkdownNode = (node: MarkdownNode): string => {
   // but can be `## heading text <span>span text</span> **bold text**`
   // =4 nodes (space is a text node)
   visit(node, 'text', (textNode) => {
-    text += textNode.value || ''
+    text += (textNode as any).value || ''
   })
 
   return text

@@ -1,5 +1,10 @@
-import { DefaultTheme, ThemeProvider as StyledComponentsThemeProvider, createGlobalStyle, css } from 'styled-components'
-import React, { useMemo } from 'react'
+import {
+  DefaultTheme,
+  ThemeProvider as StyledComponentsThemeProvider,
+  createGlobalStyle,
+  css,
+} from 'styled-components/macro'
+import { useMemo } from 'react'
 import Cursor1 from 'assets/cow-swap/cursor1.gif'
 import Cursor2 from 'assets/cow-swap/cursor2.gif'
 import Cursor3 from 'assets/cow-swap/cursor3.gif'
@@ -23,7 +28,7 @@ import { AutoColumn } from 'components/Column'
 import { RowBetween } from 'components/Row'
 import { ModalContentWrapper } from 'components/Settings/SettingsMod'
 
-export { TYPE } from '@src/theme'
+export { TYPE, MEDIA_WIDTHS } from '@src/theme'
 export * from '@src/theme/components'
 
 export function colors(darkMode: boolean): Colors {

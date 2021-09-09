@@ -1,4 +1,4 @@
-import { AddressMap, MULTICALL2_ADDRESSES as MULTICALL2_ADDRESSES_UNI } from '@src/constants/addresses'
+import { AddressMap, MULTICALL_ADDRESS as MULTICALL2_ADDRESSES_UNI } from '@src/constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 
 export * from '@src/constants/addresses'

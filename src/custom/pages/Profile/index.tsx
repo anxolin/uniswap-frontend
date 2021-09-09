@@ -1,6 +1,5 @@
-import React from 'react'
 import Page, { Title, Content, GdocsListStyle } from 'components/Page'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { Trans } from '@lingui/macro'
 import CowsImg from 'custom/assets/cow-swap/cows-side-by-side.png'
 import { ButtonPrimary, ButtonSecondary } from 'custom/components/Button'

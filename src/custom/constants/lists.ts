@@ -1,6 +1,8 @@
 // used to mark unsupported tokens, these are hosted lists of unsupported tokens
 import { SupportedChainId as ChainId } from 'constants/chains'
 
+export * from '@src/constants/lists'
+
 export type NetworkLists = {
   [chain in ChainId]: string[]
 }
