@@ -25,6 +25,8 @@ import TxCheckImage from 'assets/cow-swap/transaction-confirmed.svg'
 import OrderCheckImage from 'assets/cow-swap/order-check.svg'
 import OrderExpiredImage from 'assets/cow-swap/order-expired.svg'
 import OrderCancelledImage from 'assets/cow-swap/order-cancelled.svg'
+import { PenTool as PresignaturePendingImage } from 'react-feather'
+// import PresignaturePendingImage from 'assets/cow-swap/order-presignature-pending.svg'
 import OrderOpenImage from 'assets/cow-swap/order-open.svg'
 
 import { formatSmart } from 'utils/format'
@@ -45,6 +47,7 @@ import {
 } from './styled'
 import { getLimitPrice, getExecutionPrice } from 'state/orders/utils'
 import { DEFAULT_PRECISION } from 'constants/index'
+import { useWalletInfo } from 'hooks/useWalletInfo'
 
 const DEFAULT_ORDER_SUMMARY = {
   from: '',
@@ -56,6 +59,7 @@ const DEFAULT_ORDER_SUMMARY = {
 const PILL_COLOUR_MAP = {
   CONFIRMED: '#3B7848',
   PENDING_ORDER: '#43758C',
+  PRESIGNATURE_PENDING: '#43758C',
   PENDING_TX: '#43758C',
   EXPIRED_ORDER: '#ED673A',
   CANCELLED_ORDER: '#ED673A',
@@ -67,6 +71,8 @@ function determinePillColour(status: ActivityStatus, type: ActivityType) {
   switch (status) {
     case ActivityStatus.PENDING:
       return isOrder ? PILL_COLOUR_MAP.PENDING_ORDER : PILL_COLOUR_MAP.PENDING_TX
+    case ActivityStatus.PRESIGNATURE_PENDING:
+      return PILL_COLOUR_MAP.PRESIGNATURE_PENDING
     case ActivityStatus.CONFIRMED:
       return PILL_COLOUR_MAP.CONFIRMED
     case ActivityStatus.EXPIRED:
@@ -321,6 +327,7 @@ function unfillableAlert(): JSX.Element {
 
 export default function Transaction({ hash: id }: { hash: string }) {
   const { chainId } = useActiveWeb3React()
+  const { allowsOffchainSigning } = useWalletInfo()
   // Return info necessary for rendering order/transaction info from the incoming id
   // returns info related to activity: TransactionDetails | Order
   const activityData = useActivityDescriptors({ id, chainId })
@@ -333,11 +340,12 @@ export default function Transaction({ hash: id }: { hash: string }) {
 
   // Type of Statuses
   const isPending = status === ActivityStatus.PENDING
+  const isPresignaturePending = status === ActivityStatus.PRESIGNATURE_PENDING
   const isConfirmed = status === ActivityStatus.CONFIRMED
   const isExpired = status === ActivityStatus.EXPIRED
   const isCancelling = status === ActivityStatus.CANCELLING
   const isCancelled = status === ActivityStatus.CANCELLED
-  const isCancellable = isPending && type === ActivityType.ORDER
+  const isCancellable = allowsOffchainSigning && isPending && type === ActivityType.ORDER
   const isUnfillable = isCancellable && (activity as Order).isUnfillable
 
   // Type of Transaction
@@ -354,7 +362,7 @@ export default function Transaction({ hash: id }: { hash: string }) {
             {activity && (
               <IconType color={determinePillColour(status, type)}>
                 <IconWrapper pending={isPending || isCancelling} success={isConfirmed || isCancelled}>
-                  {isPending || isCancelling ? (
+                  {isPending || isPresignaturePending || isCancelling ? (
                     <Loader />
                   ) : isConfirmed ? (
                     <SVG src={TxCheckImage} description="Order Filled" />
@@ -379,9 +387,13 @@ export default function Transaction({ hash: id }: { hash: string }) {
             </TransactionStatusText>
           </RowFixed>
         </TransactionState>
-
         <StatusLabelWrapper>
-          <StatusLabel color={determinePillColour(status, type)} isPending={isPending} isCancelling={isCancelling}>
+          <StatusLabel
+            color={determinePillColour(status, type)}
+            isPending={isPending}
+            isCancelling={isCancelling}
+            isPresignaturePending={isPresignaturePending}
+          >
             {isConfirmed && isTransaction ? (
               <SVG src={OrderCheckImage} description="Transaction Confirmed" />
             ) : isConfirmed ? (
@@ -392,10 +404,12 @@ export default function Transaction({ hash: id }: { hash: string }) {
               <SVG src={OrderExpiredImage} description="Order Expired" />
             ) : isCancelled ? (
               <SVG src={OrderCancelledImage} description="Order Cancelled" />
+            ) : isPresignaturePending ? (
+              // <SVG src={PresignaturePendingImage} description="Pending pre-signature" />
+              <PresignaturePendingImage size={16} />
             ) : isCancelling ? null : (
               <SVG src={OrderOpenImage} description="Order Open" />
             )}
-
             {isPending
               ? 'Open'
               : isConfirmed && isTransaction
@@ -408,6 +422,8 @@ export default function Transaction({ hash: id }: { hash: string }) {
               ? 'Expired'
               : isCancelling
               ? 'Cancelling...'
+              : isPresignaturePending
+              ? 'Pre-signing...'
               : isCancelled
               ? 'Cancelled'
               : 'Open'}

@@ -32,6 +32,7 @@ import { RowSlippage } from 'components/swap/TradeSummary/RowSlippage'
 import { RowReceivedAfterSlippage } from 'components/swap/TradeSummary/RowReceivedAfterSlippage'
 import { RowFee } from 'components/swap/TradeSummary/RowFee'
 import { useExpertModeManager, useUserSlippageToleranceWithDefault } from 'state/user/hooks'
+import { useWalletInfo } from 'hooks/useWalletInfo'
 import { useHigherUSDValue } from 'hooks/useUSDCPrice'
 
 interface TradeBasicDetailsProp extends BoxProps {
@@ -149,6 +150,7 @@ export interface SwapProps extends RouteComponentProps {
   ArrowWrapperLoader: React.FC<ArrowWrapperLoaderProps>
   Price: React.FC<PriceProps>
   className?: string
+  allowsOffchainSigning: boolean
 }
 
 const LowerSectionWrapper = styled(RowBetween).attrs((props) => ({
@@ -214,7 +216,7 @@ export const LightGreyText = styled.span`
 function TradeBasicDetails({ trade, fee, ...boxProps }: TradeBasicDetailsProp) {
   const allowedSlippage = useUserSlippageToleranceWithDefault(INITIAL_ALLOWED_SLIPPAGE_PERCENT)
   const [isExpertMode] = useExpertModeManager()
-  const allowsOffchainSigning = true // TODO: Deal with this in next PR
+  const { allowsOffchainSigning } = useWalletInfo()
 
   // trades are null when there is a fee quote error e.g
   // so we can take both
@@ -369,6 +371,7 @@ const SwapButton = ({ children, showLoading, showButton = false }: SwapButtonPro
   )
 
 export default function Swap(props: RouteComponentProps) {
+  const { allowsOffchainSigning } = useWalletInfo()
   return (
     <SwapModWrapper
       TradeBasicDetails={TradeBasicDetails}
@@ -380,6 +383,7 @@ export default function Swap(props: RouteComponentProps) {
       TradeLoading={TradeLoading}
       ArrowWrapperLoader={ArrowWrapperLoader}
       Price={Price}
+      allowsOffchainSigning={allowsOffchainSigning}
       {...props}
     />
   )

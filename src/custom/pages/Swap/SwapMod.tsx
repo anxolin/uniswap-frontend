@@ -102,6 +102,7 @@ export default function Swap({
   ArrowWrapperLoader,
   Price,
   className,
+  allowsOffchainSigning,
 }: SwapProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
 
@@ -497,6 +498,7 @@ export default function Swap({
                       amountAfterFees={formatSmart(trade?.inputAmountWithFee, AMOUNT_PRECISION)}
                       type="From"
                       feeAmount={formatSmart(trade?.fee?.feeAsCurrency, AMOUNT_PRECISION)}
+                      allowsOffchainSigning={allowsOffchainSigning}
                       fiatValue={fiatValueInput}
                     />
                   )
@@ -556,6 +558,7 @@ export default function Swap({
                         trade?.outputAmountWithoutFee?.subtract(trade?.outputAmount),
                         AMOUNT_PRECISION
                       )}
+                      allowsOffchainSigning={allowsOffchainSigning}
                       fiatValue={fiatValueOutput}
                     />
                   )
