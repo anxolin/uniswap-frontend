@@ -29,6 +29,9 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Set up node ignore-scripts config
+        run: npm config set ignore-scripts false
+
       - name: Set output of cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
