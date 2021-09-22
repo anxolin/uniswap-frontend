@@ -83,6 +83,11 @@ export interface OrderFulfillmentData {
   apiAdditionalInfo?: OrderInfoApi
 }
 
+export interface AddOrUpdateOrdersBatchParams {
+  chainId: ChainId
+  orders: SerializedOrder[]
+}
+
 export interface FulfillOrdersBatchParams {
   ordersData: OrderFulfillmentData[]
   chainId: ChainId
@@ -94,6 +99,8 @@ export interface BatchOrdersUpdateParams {
 }
 export type ExpireOrdersBatchParams = BatchOrdersUpdateParams
 export type CancelOrdersBatchParams = BatchOrdersUpdateParams
+
+export const addOrUpdateOrdersBatch = createAction<AddOrUpdateOrdersBatchParams>('order/addOrUpdateOrdersBatch')
 
 export const fulfillOrdersBatch = createAction<FulfillOrdersBatchParams>('order/fullfillOrdersBatch')
 

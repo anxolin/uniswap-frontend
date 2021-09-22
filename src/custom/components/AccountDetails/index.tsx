@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react'
-import { batch, useDispatch } from 'react-redux'
+import React from 'react'
+// import { batch, useDispatch } from 'react-redux'
 
 import { useActiveWeb3React } from 'hooks/web3'
-import { AppDispatch } from 'state'
-import { clearAllTransactions } from 'state/transactions/actions'
+// import { AppDispatch } from 'state'
+// import { clearAllTransactions } from 'state/transactions/actions'
 import { getExplorerLabel, shortenAddress } from 'utils'
 
 import Copy from 'components/Copy'
@@ -18,8 +18,8 @@ import FortmaticIcon from 'assets/images/fortmaticIcon.png'
 import PortisIcon from 'assets/images/portisIcon.png'
 import Identicon from 'components/Identicon'
 import { ExternalLink as LinkIcon } from 'react-feather'
-import { LinkStyledButton } from 'theme'
-import { clearOrders } from 'state/orders/actions'
+// import { LinkStyledButton } from 'theme'
+// import { clearOrders } from 'state/orders/actions'
 import { NETWORK_LABELS } from 'components/Header'
 import {
   WalletName,
@@ -44,6 +44,8 @@ import {
 import { ConnectedWalletInfo, useWalletInfo } from 'hooks/useWalletInfo'
 import { MouseoverTooltip } from 'components/Tooltip'
 import { supportedChainId } from 'utils/supportedChainId'
+import { ExternalLink } from 'theme'
+import { getExplorerAddressLink } from 'utils/explorer'
 
 type AbstractConnector = Pick<ReturnType<typeof useActiveWeb3React>, 'connector'>['connector']
 
@@ -149,16 +151,17 @@ export default function AccountDetails({
   const chainId = supportedChainId(connectedChainId)
   const walletInfo = useWalletInfo()
   // const theme = useContext(ThemeContext)
-  const dispatch = useDispatch<AppDispatch>()
+  // const dispatch = useDispatch<AppDispatch>()
 
-  const clearAllActivityCallback = useCallback(() => {
-    if (chainId) {
-      batch(() => {
-        dispatch(clearAllTransactions({ chainId }))
-        dispatch(clearOrders({ chainId }))
-      })
-    }
-  }, [dispatch, chainId])
+  const explorerOrdersLink = account && connectedChainId && getExplorerAddressLink(connectedChainId, account)
+  // const clearAllActivityCallback = useCallback(() => {
+  //   if (chainId) {
+  //     batch(() => {
+  //       dispatch(clearAllTransactions({ chainId }))
+  //       dispatch(clearOrders({ chainId }))
+  //     })
+  //   }
+  // }, [dispatch, chainId])
   const explorerLabel = chainId && account ? getExplorerLabel(chainId, account, 'address') : undefined
   const activityTotalCount = (pendingTransactions?.length || 0) + (confirmedTransactions?.length || 0)
 
@@ -229,7 +232,7 @@ export default function AccountDetails({
             <h5>
               Recent Activity <span>{`(${activityTotalCount})`}</span>
             </h5>
-            <LinkStyledButton onClick={clearAllActivityCallback}>Clear activity</LinkStyledButton>
+            {explorerOrdersLink && <ExternalLink href={explorerOrdersLink}>View all orders</ExternalLink>}
           </span>
 
           <div>

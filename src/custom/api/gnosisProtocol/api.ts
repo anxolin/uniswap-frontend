@@ -1,5 +1,6 @@
 import { SupportedChainId as ChainId } from 'constants/chains'
 import { OrderKind } from '@gnosis.pm/gp-v2-contracts'
+import { stringify } from 'qs'
 import { getSigningSchemeApiValue, OrderCreation, OrderCancellation } from 'utils/signatures'
 import { APP_DATA_HASH } from 'constants/index'
 import { registerOnWindow } from '../../utils/misc'
@@ -79,6 +80,7 @@ export interface OrderMetaData {
   kind: OrderKind
   partiallyFillable: false
   signature: string
+  receiver: string
 }
 
 export interface UnsupportedToken {
@@ -255,6 +257,31 @@ export async function getOrder(chainId: ChainId, orderId: string): Promise<Order
   }
 }
 
+export async function getOrders(
+  chainId: ChainId,
+  owner: string,
+  limit?: number,
+  offset?: number
+): Promise<OrderMetaData[]> {
+  console.log(`[api:${API_NAME}] Get orders for `, chainId, owner, limit, offset)
+
+  const queryString = stringify({ limit, offset }, { addQueryPrefix: true })
+
+  try {
+    const response = await _get(chainId, `/account/${owner}/orders/${queryString}`)
+
+    if (!response.ok) {
+      const errorResponse: ApiErrorObject = await response.json()
+      throw new OperatorError(errorResponse)
+    } else {
+      return response.json()
+    }
+  } catch (error) {
+    console.error('Error getting orders information:', error)
+    throw new OperatorError(UNHANDLED_ORDER_ERROR)
+  }
+}
+
 export async function getAppDataDoc(chainId: ChainId, address: string): Promise<AppMetadata | null> {
   console.log(`[api:${API_NAME}] Get AppData doc for`, chainId, address)
   try {
@@ -325,5 +352,14 @@ export async function getGasPrices(chainId: ChainId = DEFAULT_NETWORK_FOR_LISTS)
 
 // Register some globals for convenience
 registerOnWindow({
-  operator: { getFeeQuote, getAppDataDoc, getOrder, sendSignedOrder, uploadAppDataDoc, apiGet: _get, apiPost: _post },
+  operator: {
+    getFeeQuote,
+    getAppDataDoc,
+    getOrder,
+    getOrders,
+    sendSignedOrder,
+    uploadAppDataDoc,
+    apiGet: _get,
+    apiPost: _post,
+  },
 })
