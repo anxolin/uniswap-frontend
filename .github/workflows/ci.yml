@@ -13,6 +13,7 @@ env:
   REPO_NAME_SLUG: gpswapui
   PR_NUMBER: ${{ github.event.number }}
   REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  REACT_APP_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
 jobs:
   setup:
@@ -27,6 +28,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: lts/*
+
+      - name: Set up node ignore-scripts config
+        run: npm config set ignore-scripts false
 
       - name: Set output of cache
         id: yarn-cache
