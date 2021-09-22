@@ -22,6 +22,7 @@ export function generateReferralMetadataDoc(
   referralAddress: string,
   appDataDoc: AppDataDoc = generateAppDataDoc()
 ): AppDataDoc {
+  if (!referralAddress) return appDataDoc
   return {
     ...appDataDoc,
     metadata: {
