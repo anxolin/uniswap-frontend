@@ -23,6 +23,7 @@ import { ButtonSecondary } from 'components/Button'
 import Loader from 'components/Loader'
 
 import { RowBetween } from 'components/Row'
+import { WrongNetworkBtn } from 'components/WalletModal/WrongNetworkMessage'
 // import WalletModal from 'components/WalletModal'
 
 // const IconWrapper = styled.div<{ size?: number }>`
@@ -224,7 +225,8 @@ export function Web3StatusInner({
     return (
       <Web3StatusError onClick={toggleWalletModal}>
         <NetworkIcon />
-        <Text>{error instanceof UnsupportedChainIdError ? <Trans>Wrong Network</Trans> : <Trans>Error</Trans>}</Text>
+        {/* <Text>{error instanceof UnsupportedChainIdError ? <Trans>Wrong Network</Trans> : <Trans>Error</Trans>}</Text> */}
+        <Text>{error instanceof UnsupportedChainIdError ? <WrongNetworkBtn /> : <Trans>Error</Trans>}</Text>
       </Web3StatusError>
     )
   } else {

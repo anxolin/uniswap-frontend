@@ -25,6 +25,7 @@ import ModalMod from '@src/components/Modal'
 import Option from 'components/WalletModal/Option'
 import PendingView from 'components/WalletModal/PendingView'
 import { LightCard } from 'components/Card'
+import { WrongNetworkMessage } from 'components/WalletModal/WrongNetworkMessage'
 
 export const CloseIcon = styled.div`
   position: absolute;
@@ -326,7 +327,8 @@ export default function WalletModal({
           <ContentWrapper>
             {error instanceof UnsupportedChainIdError ? (
               <h5>
-                <Trans>Please connect to the appropriate Ethereum network.</Trans>
+                {/* <Trans>Please connect to the appropriate Ethereum network.</Trans> */}
+                <WrongNetworkMessage />
               </h5>
             ) : (
               <Trans>Error connecting. Try refreshing the page.</Trans>
