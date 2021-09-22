@@ -36,13 +36,18 @@ export const registerOnWindow = (registerMapping: Record<string, any>) => {
   })
 }
 
-export function getChainIdValues(): ChainId[] {
-  const ChainIdList = Object.values(ChainId)
+export function mapEnumKeysToArray<R, T extends Record<string, unknown> = Record<string, unknown>>(
+  enumVal: T,
+  isPureEnum = true
+): R[] {
+  if (typeof enumVal !== 'object') return []
+  const list = Object.values(enumVal)
 
-  // cut in half as enums are always represented as key/value and then inverted
-  // https://stackoverflow.com/a/51536142
-  return ChainIdList.slice(ChainIdList.length / 2) as ChainId[]
+  // pure enums are Record<string, string>, whereas non-pure Record<string, number>
+  return (isPureEnum ? list : list.slice(list.length / 2)) as R[]
 }
+
+export const getChainIdValues = () => mapEnumKeysToArray<ChainId>(ChainId, false)
 
 export interface CanonicalMarketParams<T> {
   sellToken: T
