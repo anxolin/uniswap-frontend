@@ -101,3 +101,6 @@ export const UNSUPPORTED_TOKENS_FAQ_URL = '/faq#what-token-pairs-does-cowswap-al
 
 // fee threshold - should be greater than percentage, show warning
 export const FEE_SIZE_THRESHOLD = new Fraction(10, 100) // 30%
+
+// REMINDER!!! update with real solver address
+export const SOLVER_ADDRESS = '0x0000000000000000000000000000000000000000'

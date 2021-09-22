@@ -13,7 +13,7 @@ import {
   toPriceInformation as toPriceInformationMatcha,
 } from 'api/matcha-0x'
 
-import { OptimalRatesWithPartnerFees as OptimalRatesWithPartnerFeesParaswap } from 'paraswap'
+import { OptimalRate } from 'paraswap-core'
 import { OrderKind } from '@gnosis.pm/gp-v2-contracts'
 import { ChainId } from 'state/lists/actions'
 import { toErc20Address } from 'utils/tokens'
@@ -125,7 +125,7 @@ function _extractPriceAndErrorPromiseValues(
   // we pass the kind of trade here as matcha doesn't have an easy way to differentiate
   kind: OrderKind,
   gpPriceResult: PromiseSettledResult<PriceInformation>,
-  paraSwapPriceResult: PromiseSettledResult<OptimalRatesWithPartnerFeesParaswap | null>,
+  paraSwapPriceResult: PromiseSettledResult<OptimalRate | null>,
   matchaPriceResult: PromiseSettledResult<MatchaPriceQuote | null>
 ): [Array<PriceInformationWithSource>, Array<PromiseRejectedResultWithSource>] {
   // Prepare an array with all successful estimations
